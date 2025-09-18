@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIM - Card Matching Game</title>
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+    <div class="bg-overlay"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="main-title">Welcome <br> To <br> Upside-Down</h1>
+            <!-- <p class="subtitle">Card Matching Memory Game</p> -->
+        </header>
+
+        <!-- Game Information -->
+        <section class="game-info">
+            <h2 class="info-title">🎮 Welcome to Upside-Down!</h2>
+            <p class="info-description">
+                Test your memory and concentration skills in this exciting card matching game. 
+                Flip cards to find matching pairs and complete the challenge before time runs out. 
+                Perfect for training your brain and having fun at the same time!
+            </p>
+        </section>
+
+        <!-- Game Instructions -->
+        <section class="instructions">
+            <h2 class="instructions-title">📋 How to Play</h2>
+            
+            <div class="instruction-item">
+                <div class="instruction-number">1</div>
+                <div class="instruction-text">
+                    <strong>Start the Game:</strong> Click the "Begin Game" button to start your memory challenge.
+                </div>
+            </div>
+            
+            <div class="instruction-item">
+                <div class="instruction-number">2</div>
+                <div class="instruction-text">
+                    <strong>Flip Cards:</strong> Click on any card to flip it over and reveal the hidden image or symbol.
+                </div>
+            </div>
+            
+            <div class="instruction-item">
+                <div class="instruction-number">3</div>
+                <div class="instruction-text">
+                    <strong>Find Matches:</strong> Click on a second card to find its matching pair. If they match, they stay flipped!
+                </div>
+            </div>
+            
+            <div class="instruction-item">
+                <div class="instruction-number">4</div>
+                <div class="instruction-text">
+                    <strong>Complete the Grid:</strong> Continue until all card pairs are matched. Try to do it in the fewest moves possible!
+                </div>
+            </div>
+            
+            <div class="instruction-item">
+                <div class="instruction-number">5</div>
+                <div class="instruction-text">
+                    <strong>Beat Your Score:</strong> Challenge yourself to improve your time and reduce your move count with each game.
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Start Button -->
+        <div class="game-button-container">
+            <button class="begin-button" onclick="startGame()">
+                🚀 Begin Game
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 GIM - Card Matching Game | Ready to challenge your memory?</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Leaderboard - Stranger Things Style</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Metal+Mania&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #0d0d0d, #1a0000, #330000);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            font-family: 'Metal Mania', cursive;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .main-title {
+            font-family: 'Nosifer', cursive;
+            font-size: 4rem;
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 30px #ff0000,
+                0 0 40px #ff0000;
+            margin-bottom: 2rem;
+            letter-spacing: 3px;
+            opacity: 0;
+        }
+        
+        .subtitle {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1.5rem;
+            color: #cc0000;
+            text-shadow: 0 0 10px #cc0000;
+            margin-bottom: 3rem;
+            opacity: 0;
+        }
+        
+        .loading-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 2rem;
+        }
+        
+        .outer-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #ff0000;
+            border-right: 3px solid #ff0000;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .inner-ring {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: calc(100% - 40px);
+            height: calc(100% - 40px);
+            border: 2px solid transparent;
+            border-bottom: 2px solid #cc0000;
+            border-left: 2px solid #cc0000;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .center-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ff0000, transparent);
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .loading-text {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1.2rem;
+            color: #ff6666;
+            text-shadow: 0 0 5px #ff6666;
+            opacity: 0;
+        }
+        
+        .dots {
+            display: inline-block;
+        }
+        
+        .dot {
+            display: inline-block;
+            opacity: 0;
+            animation: dotBlink 1.5s infinite;
+        }
+        
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+        
+        @keyframes dotBlink {
+            0%, 20% { opacity: 0; }
+            50% { opacity: 1; }
+            80%, 100% { opacity: 0; }
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ff0000;
+        }
+        
+        .lightning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .upside-down-filter {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at center, transparent 30%, rgba(255, 0, 0, 0.1) 100%),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.3) 75%);
+            background-size: 100% 100%, 20px 20px;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .loading-container {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upside-down-filter"></div>
+    <div class="lightning"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <h1 class="main-title">LOADING</h1>
+        <p class="subtitle">Accessing The Upside Down</p>
+        
+        <div class="loading-container">
+            <div class="outer-ring"></div>
+            <div class="inner-ring"></div>
+            <div class="center-glow"></div>
+        </div>
+        
+        <p class="loading-text">
+            Retrieving leaderboard data<span class="dots">
+                <span class="dot">.</span>
+                <span class="dot">.</span>
+                <span class="dot">.</span>
+            </span>
+        </p>
+    </div>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // GSAP Animations
+        function initAnimations() {
+            const tl = gsap.timeline();
+            
+            // Initial entrance animations
+            tl.to('.main-title', {
+                opacity: 1,
+                duration: 1,
+                ease: 'power2.out',
+                scale: 1.1,
+                yoyo: true,
+                repeat: 1
+            })
+            .to('.subtitle', {
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            }, '-=0.5')
+            .to('.outer-ring', {
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out'
+            })
+            .to('.inner-ring', {
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out'
+            }, '-=0.3')
+            .to('.center-glow', {
+                opacity: 0.8,
+                duration: 0.5,
+                ease: 'power2.out'
+            }, '-=0.3')
+            .to('.loading-text', {
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+            
+            // Continuous animations
+            gsap.to('.outer-ring', {
+                rotation: 360,
+                duration: 3,
+                ease: 'none',
+                repeat: -1
+            });
+            
+            gsap.to('.inner-ring', {
+                rotation: -360,
+                duration: 4,
+                ease: 'none',
+                repeat: -1
+            });
+            
+            gsap.to('.center-glow', {
+                scale: 1.2,
+                opacity: 0.4,
+                duration: 2,
+                ease: 'power2.inOut',
+                yoyo: true,
+                repeat: -1
+            });
+            
+            // Title glow effect
+            gsap.to('.main-title', {
+                textShadow: `
+                    0 0 20px #ff0000,
+                    0 0 40px #ff0000,
+                    0 0 60px #ff0000,
+                    0 0 80px #ff0000
+                `,
+                duration: 2,
+                ease: 'power2.inOut',
+                yoyo: true,
+                repeat: -1
+            });
+            
+            // Particle animations
+            gsap.utils.toArray('.particle').forEach((particle, i) => {
+                gsap.set(particle, {
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                });
+                
+                gsap.to(particle, {
+                    y: '-=50',
+                    x: '+=20',
+                    duration: Math.random() * 3 + 2,
+                    ease: 'none',
+                    repeat: -1,
+                    yoyo: true,
+                    delay: Math.random() * 2
+                });
+                
+                gsap.to(particle, {
+                    opacity: Math.random() * 0.8 + 0.2,
+                    duration: Math.random() * 2 + 1,
+                    ease: 'power2.inOut',
+                    yoyo: true,
+                    repeat: -1,
+                    delay: Math.random()
+                });
+            });
+            
+            // Lightning effect
+            function createLightning() {
+                gsap.to('.lightning', {
+                    opacity: 0.3,
+                    duration: 0.1,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        gsap.to('.lightning', {
+                            opacity: 0,
+                            duration: 0.1,
+                            delay: 0.05
+                        });
+                    }
+                });
+            }
+            
+            // Random lightning strikes
+            setInterval(createLightning, Math.random() * 5000 + 3000);
+            
+            // Screen shake effect occasionally
+            function screenShake() {
+                gsap.to('.container', {
+                    x: Math.random() * 10 - 5,
+                    y: Math.random() * 10 - 5,
+                    duration: 0.1,
+                    ease: 'power2.inOut',
+                    yoyo: true,
+                    repeat: 3,
+                    onComplete: () => {
+                        gsap.set('.container', { x: 0, y: 0 });
+                    }
+                });
+            }
+            
+            setInterval(screenShake, Math.random() * 8000 + 5000);
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            initAnimations();
+        });
+        
+        // Simulate loading completion (remove this in your actual implementation)
+        setTimeout(() => {
+            // You can add a completion animation here
+            gsap.to('.container', {
+                scale: 0.8,
+                opacity: 0.5,
+                duration: 1,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    // Hide loading screen and show leaderboard
+                    console.log('Loading complete - show leaderboard');
+                }
+            });
+        }, 10000); // Remove this timeout in your actual game
+    </script>
+</body>
+</html>

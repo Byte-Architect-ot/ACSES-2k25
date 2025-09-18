@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stranger Things Leaderboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Creepster', cursive;
+            position: relative;
+        }
+
+        /* Animated background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #330000 0%, #000000 70%);
+        }
+
+        .particle {
+            position: absolute;
+            background: #ff0000;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 0.6; }
+        }
+
+        .lightning {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, #ff0000, transparent);
+            opacity: 0;
+            animation: lightning 3s infinite;
+        }
+
+        @keyframes lightning {
+            0%, 90%, 100% { opacity: 0; }
+            5%, 10% { opacity: 1; }
+        }
+
+        /* Main container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-family: 'Creepster', cursive;
+            font-size: 3.5rem;
+            color: #ff0000;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .subtitle {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: #cc0000;
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* Stats section */
+        .stats {
+            background: rgba(51, 0, 0, 0.3);
+            border: 1px solid #660000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffcccc;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Your score section */
+        .your-score {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .your-score .leaderboard-container {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        .leaderboard {
+            background: rgba(51, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .player-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #660000;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-100px) scale(0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-entry:hover {
+            border-color: #ff0000;
+            transform: translateX(0) scale(1.02);
+        }
+
+        .player-entry::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .player-entry:hover::before {
+            left: 100%;
+        }
+
+        .rank {
+            font-family: 'Creepster', cursive;
+            font-size: 1.8rem;
+            color: #ff0000;
+            min-width: 60px;
+        }
+
+        .rank.top3 {
+            font-size: 2.2rem;
+        }
+
+        .player-name {
+            font-family: 'Creepster', cursive;
+            font-size: 1.4rem;
+            color: #ffffff;
+            flex-grow: 1;
+            text-align: left;
+            margin-left: 20px;
+        }
+
+        .score {
+            font-family: 'Creepster', cursive;
+            font-size: 1.6rem;
+            color: #ffcccc;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .reveal-btn, .auto-reveal-btn {
+            display: block;
+            margin: 15px auto;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #660000, #990000);
+            color: #ffffff;
+            border: 2px solid #ff0000;
+            border-radius: 25px;
+            font-family: 'Creepster', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reveal-btn:hover, .auto-reveal-btn:hover {
+            background: linear-gradient(45deg, #990000, #cc0000);
+            transform: scale(1.05);
+        }
+
+        .reveal-btn:disabled, .auto-reveal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Crown for top 3 */
+        .crown {
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            font-size: 2rem;
+            opacity: 0;
+            transform: rotate(-15deg) scale(0);
+        }
+
+        .crown.gold { color: #ffd700; }
+        .crown.silver { color: #c0c0c0; }
+        .crown.bronze { color: #cd7f32; }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            color: #ff0000;
+            font-size: 1.5rem;
+            padding: 40px;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 2s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Error state */
+        .error {
+            text-align: center;
+            color: #ff6666;
+            padding: 40px;
+        }
+
+        .error button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Creepster', cursive;
+            margin-top: 15px;
+        }
+
+        .error button:hover {
+            background: #cc0000;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            color: #cccccc;
+            padding: 40px;
+        }
+
+        .empty .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* Winner celebration styles */
+        .winner-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #ffd700;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px #ffd700; }
+            to { box-shadow: 0 0 40px #ffd700; }
+        }
+
+        .firework {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .player-entry {
+                padding: 10px 15px;
+            }
+            
+            .rank {
+                font-size: 1.5rem;
+                min-width: 50px;
+            }
+            
+            .player-name {
+                font-size: 1.2rem;
+                margin-left: 15px;
+            }
+            
+            .score {
+                font-size: 1.3rem;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-container"></div>
+    
+    <div class="container">
+        <h1 class="title">LEADERBOARD</h1>
+        <p class="subtitle">Top Survivors of the Upside Down</p>
+        
+        <!-- Stats section -->
+        <div id="stats" class="stats"></div>
+        
+        <!-- Your score section -->
+        <div id="your-score" class="your-score"></div>
+        
+        <div class="leaderboard">
+            <div id="playerList"></div>
+            <button class="auto-reveal-btn" onclick="autoRevealAll()">🚀 Auto Reveal All</button>
+            <button class="reveal-btn" onclick="revealNext()">Reveal Next Player</button>
+        </div>
+    </div>
+
+    <script>
+        let leaderboardData = [];
+        let currentRevealIndex = 0;
+        let maxPlayers = 15;
+        let isAutoRevealing = false;
+        let autoRevealTimer = null;
+
+        // Initialize background animations
+        function createBackgroundEffects() {
+            const bgContainer = document.querySelector('.bg-container');
+            
+            // Create floating particles
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                bgContainer.appendChild(particle);
+            }
+
+            // Create lightning effects
+            for (let i = 0; i < 8; i++) {
+                const lightning = document.createElement('div');
+                lightning.className = 'lightning';
+                lightning.style.left = Math.random() * 100 + '%';
+                lightning.style.height = Math.random() * 200 + 100 + 'px';
+                lightning.style.animationDelay = Math.random() * 3 + 's';
+                bgContainer.appendChild(lightning);
+            }
+        }
+
+        // Load leaderboard data from API
+        async function loadLeaderboard() {
+            const playerList = document.getElementById('playerList');
+            const statsElement = document.getElementById('stats');
+            
+            try {
+                playerList.innerHTML = '<div class="loading">Loading leaderboard... 🎮</div>';
+                
+                const response = await fetch('/api/leaderboard');
+                const scores = await response.json();
+                
+                if (scores.length === 0) {
+                    playerList.innerHTML = `
+                        <div class="empty">
+                            <div class="icon">🎯</div>
+                            <p style="font-size: 1.5rem; margin-bottom: 10px;">No scores yet!</p>
+                            <p style="opacity: 0.7;">Be the first to set a record!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Store the data and initialize leaderboard
+                leaderboardData = scores;
+                maxPlayers = Math.min(scores.length, 15);
+                currentRevealIndex = 0;
+                
+                // Clear the list and initialize entries
+                playerList.innerHTML = '';
+                initializeLeaderboard();
+                
+                // Update stats
+                const totalPlayers = scores.length;
+                const highestScore = scores[0]?.score || 0;
+                const averageScore = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / totalPlayers);
+                
+                statsElement.innerHTML = `
+                    📊 Total Players: ${totalPlayers} | 
+                    🎯 Highest Score: ${highestScore.toLocaleString()} | 
+                    📈 Average Score: ${averageScore.toLocaleString()}
+                `;
+                
+                // Reset reveal button
+                const revealBtn = document.querySelector('.reveal-btn');
+                const autoBtn = document.querySelector('.auto-reveal-btn');
+                revealBtn.textContent = `Reveal Rank #${maxPlayers} (${maxPlayers} remaining)`;
+                revealBtn.disabled = false;
+                autoBtn.style.display = 'block';
+                autoBtn.disabled = false;
+                
+                // Stop any existing auto reveal
+                if (autoRevealTimer) {
+                    clearInterval(autoRevealTimer);
+                    isAutoRevealing = false;
+                }
+                
+            } catch (error) {
+                playerList.innerHTML = `
+                    <div class="error">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
+                        <p style="font-size: 1.5rem; margin-bottom: 10px;">Error loading leaderboard</p>
+                        <p style="opacity: 0.7;">Please check your connection</p>
+                        <button onclick="loadLeaderboard()">Try Again</button>
+                    </div>
+                `;
+                console.error('Error:', error);
+            }
+        }
+
+        // Show current user's score if available
+        function showYourScore() {
+            const username = localStorage.getItem('username');
+            const highScore = localStorage.getItem('highScore');
+            const yourScoreElement = document.getElementById('your-score');
+            
+            if (username && highScore) {
+                yourScoreElement.innerHTML = `
+                    <div class="leaderboard-container">
+                        <div style="font-size: 1rem; opacity: 0.8; margin-bottom: 8px;">Your Best Score</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;">${username}: ${parseInt(highScore).toLocaleString()}</div>
+                    </div>
+                `;
+                
+                // Animate your score section
+                gsap.to(yourScoreElement, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 1,
+                    ease: "power2.out"
+                });
+            }
+        }
+
+        // Initialize leaderboard entries (hidden initially)
+        function initializeLeaderboard() {
+            const playerList = document.getElementById('playerList');
+            
+            leaderboardData.slice(0, maxPlayers).forEach((player, index) => {
+                const entry = document.createElement('div');
+                entry.className = 'player-entry';
+                entry.setAttribute('data-index', index);
+                
+                const rank = index + 1;
+                const isTop3 = rank <= 3;
+                
+                entry.innerHTML = `
+                    ${isTop3 ? `<div class="crown ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : 'bronze'}">👑</div>` : ''}
+                    <div class="rank ${isTop3 ? 'top3' : ''}">#${rank}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="score">${player.score.toLocaleString()}</div>
+                `;
+                
+                playerList.appendChild(entry);
+            });
+        }
+
+        // Auto reveal all players
+        function autoRevealAll() {
+            if (isAutoRevealing) return;
+            
+            isAutoRevealing = true;
+            const autoBtn = document.querySelector('.auto-reveal-btn');
+            const manualBtn = document.querySelector('.reveal-btn');
+            
+            autoBtn.style.display = 'none';
+            manualBtn.textContent = 'Auto Revealing...';
+            manualBtn.disabled = true;
+            
+            // Reveal players one by one with delay
+            let revealCount = 0;
+            autoRevealTimer = setInterval(() => {
+                if (revealCount < maxPlayers) {
+                    revealNext(true);
+                    revealCount++;
+                } else {
+                    clearInterval(autoRevealTimer);
+                    autoRevealTimer = null;
+                    isAutoRevealing = false;
+                }
+            }, 1000);
+        }
+
+        // Reveal next player with animation (from bottom to top)
+        function revealNext(isAuto = false) {
+            if (currentRevealIndex >= maxPlayers) return;
+            
+            // Reveal from the bottom (last entry first)
+            const indexToReveal = maxPlayers - 1 - currentRevealIndex;
+            const entry = document.querySelector(`[data-index="${indexToReveal}"]`);
+            const button = document.querySelector('.reveal-btn');
+            
+            if (!entry) return;
+            
+            // Animate entry reveal
+            gsap.to(entry, {
+                opacity: 1,
+                x: 0,
+                scale: 1,
+                duration: 0.8,
+                ease: "back.out(1.7)"
+            });
+
+            // Animate crown for top 3
+            const actualRank = indexToReveal + 1;
+            const crown = entry.querySelector('.crown');
+            if (crown && actualRank <= 3) {
+                gsap.to(crown, {
+                    opacity: 1,
+                    scale: 1,
+                    rotation: 0,
+                    duration: 0.6,
+                    delay: 0.4,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            }
+
+            currentRevealIndex++;
+            
+            // Check if this is the winner (#1)
+            if (actualRank === 1) {
+                setTimeout(() => {
+                    celebrateWinner(entry);
+                }, 800);
+            }
+            
+            // Update button
+            if (!isAuto) {
+                if (currentRevealIndex >= maxPlayers) {
+                    button.textContent = "🏆 CHAMPION CROWNED! 🏆";
+                    button.disabled = true;
+                } else {
+                    const remainingPlayers = maxPlayers - currentRevealIndex;
+                    const nextRank = maxPlayers - currentRevealIndex;
+                    button.textContent = `Reveal Rank #${nextRank} (${remainingPlayers} remaining)`;
+                }
+            } else if (currentRevealIndex >= maxPlayers) {
+                button.textContent = "🏆 CHAMPION CROWNED! 🏆";
+                button.disabled = true;
+            }
+        }
+
+        // Celebration animation for the winner
+        function celebrateWinner(winnerEntry) {
+            // Add winner glow
+            const glowDiv = document.createElement('div');
+            glowDiv.className = 'winner-glow';
+            winnerEntry.style.position = 'relative';
+            winnerEntry.appendChild(glowDiv);
+            
+            // Create fireworks
+            createFireworks();
+            
+            // Create confetti
+            createConfetti();
+            
+            // Animate winner entry
+            gsap.to(winnerEntry, {
+                scale: 1.1,
+                duration: 0.5,
+                yoyo: true,
+                repeat: 3,
+                ease: "power2.inOut"
+            });
+            
+            // Change winner text color
+            const winnerName = winnerEntry.querySelector('.player-name');
+            const winnerScore = winnerEntry.querySelector('.score');
+            const winnerRank = winnerEntry.querySelector('.rank');
+            
+            gsap.to([winnerName, winnerScore, winnerRank], {
+                color: '#ffd700',
+                duration: 1,
+                ease: "power2.out"
+            });
+        }
+
+        // Create fireworks effect
+        function createFireworks() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * window.innerWidth + 'px';
+                    firework.style.top = Math.random() * window.innerHeight * 0.6 + 'px';
+                    firework.innerHTML = '✨';
+                    firework.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                    firework.style.color = ['#ff0000', '#ffd700', '#ff6600', '#ffffff'][Math.floor(Math.random() * 4)];
+                    
+                    document.body.appendChild(firework);
+                    
+                    gsap.fromTo(firework, 
+                        { scale: 0, rotation: 0 },
+                        { 
+                            scale: 1.5, 
+                            rotation: 360, 
+                            duration: 1,
+                            ease: "power2.out",
+                            onComplete: () => firework.remove()
+                        }
+                    );
+                    
+                    gsap.to(firework, {
+                        y: -100,
+                        opacity: 0,
+                        duration: 1,
+                        ease: "power2.out"
+                    });
+                }, i * 100);
+            }
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = -10 + 'px';
+                    confetti.style.backgroundColor = ['#ff0000', '#ffd700', '#ff6600', '#ffffff', '#ff69b4'][Math.floor(Math.random() * 5)];
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    gsap.to(confetti, {
+                        y: window.innerHeight + 100,
+                        x: (Math.random() - 0.5) * 200,
+                        rotation: Math.random() * 720,
+                        duration: Math.random() * 3 + 2,
+                        ease: "power2.in",
+                        onComplete: () => confetti.remove()
+                    });
+                }, i * 50);
+            }
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            createBackgroundEffects();
+            loadLeaderboard();
+            showYourScore();
+            
+            // Animate title and subtitle
+            gsap.to('.title', {
+                opacity: 1,
+                scale: 1,
+                duration: 1,
+                ease: "back.out(1.7)"
+            });
+            
+            gsap.to('.subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+
+            // Animate leaderboard container
+            gsap.from('.leaderboard', {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                delay: 0.6,
+                ease: "power2.out"
+            });
+        });
+
+        // Add click functionality to entries for additional effects
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.player-entry')) {
+                const entry = e.target.closest('.player-entry');
+                
+                // Pulse effect on click
+                gsap.to(entry, {
+                    scale: 1.05,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: "power2.inOut"
+                });
+            }
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (!isAutoRevealing) {
+                loadLeaderboard();
+                showYourScore();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

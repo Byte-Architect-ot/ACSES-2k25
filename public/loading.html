@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Loading Spinner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+<div class="preloader">
+    <!-- Ring 1 -->
+    <div class="preloader__ring">
+      <div class="preloader__sector">L</div>
+      <div class="preloader__sector">O</div>
+      <div class="preloader__sector">A</div>
+      <div class="preloader__sector">D</div>
+      <div class="preloader__sector">I</div>
+      <div class="preloader__sector">N</div>
+      <div class="preloader__sector">G</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+    </div>
+
+    <!-- Ring 2 -->
+    <div class="preloader__ring">
+      <div class="preloader__sector">L</div>
+      <div class="preloader__sector">O</div>
+      <div class="preloader__sector">A</div>
+      <div class="preloader__sector">D</div>
+      <div class="preloader__sector">I</div>
+      <div class="preloader__sector">N</div>
+      <div class="preloader__sector">G</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector">-</div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+      <div class="preloader__sector"></div>
+    </div>
+  </div>
+
+  <div class="game-button-container">
+  <div class="wrapper">
+    <div class="link_wrapper">
+      <a href="#" id="beginGame">
+        🚀 Begin Game
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.832 268.832">
+            <path d="M265.17 125.577l-80-80c-4.88-4.88-12.796-4.88-17.677 0-4.882 4.882-4.882 12.796 0 17.678l58.66 58.66H12.5c-6.903 0-12.5 5.598-12.5 12.5 0 6.903 5.597 12.5 12.5 12.5h213.654l-58.66 58.662c-4.88 4.882-4.88 12.796 0 17.678 2.44 2.44 5.64 3.66 8.84 3.66s6.398-1.22 8.84-3.66l79.997-80c4.883-4.882 4.883-12.796 0-17.678z" />
+          </svg>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("beginGame").addEventListener("click", function (event) {
+    event.preventDefault(); // stop direct navigation
+
+    // Go to name.html first
+    window.location.href = "./name.html";
+  });
+</script>
+
+
+
+
+
+  <script>
+    const button = document.querySelector('.link_wrapper');
+    if ('ontouchstart' in window) {
+      button.addEventListener('touchstart', function() {
+        this.style.transform = 'translateY(-1px) scale(0.98)';
+      });
+      button.addEventListener('touchend', function() {
+        this.style.transform = '';
+      });
+    }
+  </script>
+</body>
+
+</html>

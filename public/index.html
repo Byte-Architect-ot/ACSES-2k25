@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Preloader Animation</title>
+    <link rel="stylesheet" href="first.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/SplitText.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+
+    <script src="./pacman%20game/build/app.js"></script>
+
+    <script>
+        // Load leaderboard on page load
+        window.onload = function() {
+            //loadLeaderboard();
+        };
+
+        // Load leaderboard data
+        async function loadLeaderboardold() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                const scores = await response.json();
+                
+                const listElement = document.getElementById('leaderboard-list');
+                
+                if (scores.length === 0) {
+                    listElement.innerHTML = '<p>No scores yet. Be the first to add one!</p>';
+                    return;
+                }
+                
+                listElement.innerHTML = scores.map((score, index) => {
+                    const isTop3 = index < 3 ? 'top-3' : '';
+                    return `
+                        <div class="score-item ${isTop3}">
+                            <span class="rank">#${index + 1}</span>
+                            <span class="name">${score.name}</span>
+                            <span class="score">${score.score.toLocaleString()}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                document.getElementById('leaderboard-list').innerHTML = 
+                    '<p style="color: red;">Error loading leaderboard</p>';
+                console.error('Error:', error);
+            }
+        }
+
+
+        //console.log(localStorage.getItem("username"));
+        //console.log(Number(localStorage.getItem("highScore")));
+
+
+        // Add new score
+        //chnage the old
+        async function addScoreold() {
+            const name = localStorage.getItem("username");
+            const score = localStorage.getItem("highScore");
+            
+            if (!name || !score) {
+                alert('Please enter both name and score');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, score })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Clear inputs
+                    //document.getElementById('nameInput').value = '';
+                    //document.getElementById('scoreInput').value = '';
+                    
+                    // Reload leaderboard
+                    loadLeaderboard();
+                    
+                    alert('Score added successfully!');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error adding score');
+                console.error('Error:', error);
+            }
+        }
+
+
+
+        async function addScore() {
+            console.log("scire is working");
+    const name = localStorage.getItem("username"); // from login/name.html
+    const score = localStorage.getItem("highScore"); // set on game over
+    
+    if (!name || !score) {
+        console.warn('Name or score missing in localStorage');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, score })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            console.log("✅ Score added successfully!");
+            loadLeaderboard(); // refresh leaderboard
+        } else {
+            console.error("❌ Error adding score:", result.error);
+        }
+    } catch (error) {
+        console.error("⚠️ Network error:", error);
+    }
+}
+
+
+
+    </script>
+
+
+    <script>
+
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'grotesk': ['Space Grotesk', 'sans-serif']
+                    }
+                }
+            }
+        }
+
+
+
+
+
+    </script>
+
+
+    
+</head>
+<body>
+    <div id="preloader" class="font-grotesk">
+        <div class="preloader-content">
+            <div class="progress-text">0</div>
+            <div class="loading-text flex flex-col items-center justify-center text">
+                <div>Are You Excited?</div>
+                <!-- <div>To Dive In Down Side World!</div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>WCE ACSES PRESENTS</h1>
+        <p>Catch Up With The Vecna!</p>
+        <a href="loading.html" class="btn btn-primary mt-10 inline-block text-center" id="redirect-btn">Get Ready To Dive In Down Side World!</a>
+    </div>
+
+    <script src="first.js"></script>
+    <script>
+        // Ensure the button redirects properly
+        document.getElementById('redirect-btn').addEventListener('click', function(e) {
+            window.location.href = 'loading.html';
+        });
+    </script>
+</body>
+</html>
