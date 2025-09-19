@@ -1520,7 +1520,7 @@ class GameCoordinator {
     this.activeTimers = [];
     this.points = 0;
     this.level = 1;
-    this.lives = 5;
+    this.lives = 4;
     this.extraLifeGiven = false;
     this.remainingDots = 0;
     this.allowKeyPresses = true;
