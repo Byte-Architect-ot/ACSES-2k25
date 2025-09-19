@@ -62,17 +62,17 @@ class Ghost {
     const pacmanSpeed = pacman.velocityPerMs;
     const levelAdjustment = level / 100;
 
-    this.slowSpeed = pacmanSpeed * (0.75 + levelAdjustment);
-    this.mediumSpeed = pacmanSpeed * (0.875 + levelAdjustment);
-    this.fastSpeed = pacmanSpeed * (1 + levelAdjustment);
+    this.slowSpeed = pacmanSpeed * (0.7 + levelAdjustment);
+    this.mediumSpeed = pacmanSpeed * (0.775 + levelAdjustment);
+    this.fastSpeed = pacmanSpeed * (0.8 + levelAdjustment);
 
     if (!this.defaultSpeed) {
       this.defaultSpeed = this.slowSpeed;
     }
 
-    this.scaredSpeed = pacmanSpeed * 0.5;
+    this.scaredSpeed = pacmanSpeed * 0.4;
     this.transitionSpeed = pacmanSpeed * 0.4;
-    this.eyeSpeed = pacmanSpeed * 2;
+    this.eyeSpeed = pacmanSpeed * 1.5;
 
     this.velocityPerMs = this.defaultSpeed;
     this.moving = false;
@@ -940,8 +940,8 @@ class Pacman {
    * @param {number} scaledTileSize - The dimensions of a single tile
    */
   calculateVelocityPerMs(scaledTileSize) {
-    // In the original game, Pacman moved at 11 tiles per second.
-    const velocityPerSecond = scaledTileSize * 11;
+    // In the original game, Pacman moved at 8 tiles per second.
+    const velocityPerSecond = scaledTileSize * 8;
     return velocityPerSecond / 1000;
   }
 
@@ -1520,7 +1520,7 @@ class GameCoordinator {
     this.activeTimers = [];
     this.points = 0;
     this.level = 1;
-    this.lives = 2;
+    this.lives = 5;
     this.extraLifeGiven = false;
     this.remainingDots = 0;
     this.allowKeyPresses = true;
